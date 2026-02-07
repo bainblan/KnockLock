@@ -34,12 +34,12 @@ export default function Knock() {
   const [recording, setRecording] = useState(false);
   const [knockPassword, setKnockPassword] = useState<number[] | null>(null); // array of ms intervals
   const knockPasswordRef = useRef<number[] | null>(null); // Persistently track knock password for serial event closure
-  const [recordPrompt, setRecordPrompt] = useState<string>(""); // Prompt removed per instructions
+  const [recordPrompt, setRecordPrompt] = useState<string>(""); // Will be used for instructions during recording
   const [recordedRhythm, setRecordedRhythm] = useState<number[]>([]);
 
   // LOCAL TEST MODE STATE FOR KNOCK MATCHING
   const [testKnocking, setTestKnocking] = useState(false);
-  const [testPrompt, setTestPrompt] = useState<string>(""); // Cleared default prompt per instructions
+  const [testPrompt, setTestPrompt] = useState<string>("");
   const testPressTimesRef = useRef<number[]>([]);
 
   // Timing for knock recording
@@ -55,7 +55,6 @@ export default function Knock() {
     if (!recording) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Only accept 'k' or 'K' key (code "KeyK"); ignore space and others.
       if (e.code === "KeyK") {
         const now = performance.now();
         pressTimesRef.current.push(now);
@@ -106,7 +105,9 @@ export default function Knock() {
 
   // Start recording on button click
   const handleStartRecording = () => {
-    setRecordPrompt(""); // Clear or keep prompt empty per instructions
+    setRecordPrompt(
+      "Start knocking the K key for each beat of your pattern. Press Enter when finished."
+    );
     setRecording(true);
     setAccessStatus("NONE");
     pressTimesRef.current = [];
@@ -121,7 +122,9 @@ export default function Knock() {
     const times = pressTimesRef.current;
     if (times.length < 2) {
       setError("Must record at least 2 knocks.");
-      setRecordPrompt("");
+      setRecordPrompt(
+        "Too few knocks! Press 'SET KNOCK PASSWORD' and try again."
+      );
       return;
     }
     const intervals = [];
@@ -131,7 +134,7 @@ export default function Knock() {
     setKnockPassword(intervals);
     // Instead of displaying the pattern in the UI, put it in the console
     console.log("Set Knock Pattern:", intervals.join(", "), "ms");
-    setRecordPrompt(""); // Do not display in UI
+    setRecordPrompt(""); // Do not display in UI after recording
     setError(null);
     pressTimesRef.current = [];
     setRecordedRhythm([]);
@@ -251,7 +254,9 @@ export default function Knock() {
 
   // TEST: handle test knock button click
   const handleStartTestKnocking = () => {
-    setTestPrompt(""); // No instruction message
+    setTestPrompt(
+      "Start knocking the K key to test your pattern. Press Enter when finished."
+    );
     setTestKnocking(true);
     setError(null);
     setAccessStatus("NONE");
@@ -268,7 +273,7 @@ export default function Knock() {
     const times = testPressTimesRef.current;
     if (times.length < 2) {
       setError("Must perform at least 2 test knocks.");
-      setTestPrompt("Too few knocks. Try again!");
+      setTestPrompt("Too few knocks! Press 'TEST KNOCK' and try again.");
       return;
     }
     const intervals: number[] = [];
@@ -307,17 +312,28 @@ export default function Knock() {
   };
 
   // UI rendering for knock highlight & rhythm validation status
+  // Button disabling logic: during RECORDING or TEST KNOCK, all other buttons should be disabled
+  // SET KNOCK PASSWORD disables when recording, TEST KNOCK disables when testKnocking,
+  // and all other three are disabled when either recording or testKnocking is true
+  const anyInputActive = recording || testKnocking;
+
   return (
     <div className="flex w-full max-w-lg flex-col items-center gap-8 mt-10">
       <h1 className="text-5xl font-bold w-full text-center">RECORD YOUR KNOCK</h1>
       {/* Knock UI Feedback */}
-      <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
+      <Door
+        knocking={uiKnockActive}
+        open={accessStatus === "GRANTED"}
+        onClose={() => setAccessStatus("NONE")}
+      />
       <div className="flex w-full flex-col gap-4">
         <button
           onClick={handleConnect}
-          disabled={connected}
+          disabled={connected || anyInputActive}
           className={`w-full px-6 py-3 rounded bg-blue-600 text-white font-semibold transition-opacity ${
-            connected ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+            connected || anyInputActive
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-blue-700"
           }`}
           id="connectBtn"
         >
@@ -325,22 +341,33 @@ export default function Knock() {
         </button>
         <button
           onClick={handleStartRecording}
-          disabled={recording}
+          disabled={recording || testKnocking}
           className={`w-full px-6 py-3 rounded bg-yellow-500 text-white font-semibold transition-opacity ${
-            recording ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-600"
+            (recording || testKnocking)
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-yellow-600"
           }`}
           id="recordBtn"
           tabIndex={0}
         >
           {recording
             ? "Recording... (K key = knock, Enter = done)"
-            : "RECORD KNOCK PASSWORD"}
+            : "SET KNOCK PASSWORD"}
         </button>
+        {/* Show the recording prompt under SET KNOCK PASSWORD, but only during recording */}
+        {recording && recordPrompt && (
+          <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">
+            {recordPrompt}
+          </div>
+        )}
+
         <button
           onClick={handleStartTestKnocking}
-          disabled={testKnocking}
+          disabled={testKnocking || recording}
           className={`w-full px-6 py-3 rounded bg-purple-600 text-white font-semibold transition-opacity ${
-            testKnocking ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
+            (testKnocking || recording)
+              ? "opacity-50 cursor-not-allowed"
+              : "hover:bg-purple-700"
           }`}
           id="testKnockBtn"
           tabIndex={0}
@@ -349,6 +376,12 @@ export default function Knock() {
             ? "Testing... (K key = knock, Enter = test match)"
             : "TEST KNOCK"}
         </button>
+        {/* Show the test knock prompt under TEST KNOCK, but only during testKnocking */}
+        {testKnocking && testPrompt && (
+          <div className="w-full text-center text-base text-purple-800 bg-purple-50 py-2 rounded mb-2 font-mono border border-purple-200">
+            {testPrompt}
+          </div>
+        )}
         {/* Access status – rhythm validation */}
         {accessStatus !== "NONE" && (
           <div
@@ -361,7 +394,10 @@ export default function Knock() {
             {accessStatus === "GRANTED" ? "ACCESS GRANTED" : "ACCESS DENIED"}
           </div>
         )}
-        <BackButton />
+        {/* Disable logout/back only during knock/password recording OR test knock */}
+        <div className={anyInputActive ? "pointer-events-none opacity-60" : ""}>
+          <BackButton />
+        </div>
       </div>
       {error && (
         <div className="mt-4 text-red-600 font-mono text-sm">{error}</div>
