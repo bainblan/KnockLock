@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import Image from "next/image";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -307,7 +308,25 @@ export default function Knock() {
   // UI rendering for knock highlight & rhythm validation status
   return (
     <div className="flex w-full max-w-lg flex-col items-center gap-8 mt-10">
-      <h1 className="text-5xl font-bold">RECORD YOUR KNOCK</h1>
+      <h1 className="text-5xl font-bold w-full text-center">RECORD YOUR KNOCK</h1>
+      {/* Knock UI Feedback */}
+      <div className="relative h-[360px] w-[300px]">
+        <Image
+          src="/Door Closed.png"
+          alt="Door closed"
+          width={200}
+          height={360}
+          className="absolute left-1/2 top-0 h-full w-auto -translate-x-1/2 object-contain"
+          priority
+        />
+        <Image
+          src={uiKnockActive ? "/knock 45 deg.svg" : "/knock hand.svg"}
+          alt={uiKnockActive ? "Knocking hand" : "Hand ready to knock"}
+          width={100}
+          height={100}
+          className={`absolute top-1/3 transition-all duration-100 ${uiKnockActive ? "right-[40px]" : "right-0"}`}
+        />
+      </div>
       <div className="flex w-full flex-col gap-4">
         <button
           onClick={handleConnect}
@@ -345,39 +364,6 @@ export default function Knock() {
             ? "Testing... (K key = knock, Enter = test match)"
             : "Test Knock (Simulate ESP32)"}
         </button>
-      </div>
-      <div className="text-center text-sm mt-2 mb-2 text-yellow-800">{recordPrompt}</div>
-      {recording && (
-        <div className="text-xs text-yellow-800">
-          <span className="font-mono">Knocks: {pressTimesRef.current.length}</span>
-        </div>
-      )}
-      {/* This block removed in accordance with instructions:
-      {knockPassword && (
-        <div className="text-xs text-green-700 font-mono">
-          Set Pattern: {knockPassword.join(", ")} ms
-        </div>
-      )}
-      <div className="text-center text-xs mt-2 mb-2 text-purple-800">{testPrompt}</div>
-      {testKnocking && (
-        <div className="text-xs text-purple-800">
-          <span className="font-mono">Test Knocks: {testPressTimesRef.current.length}</span>
-        </div>
-      )}
-
-      {/* Knock UI Feedback */}
-      <div
-        className={`w-16 h-16 rounded-full border-2 flex items-center justify-center mt-4 ${
-          uiKnockActive
-            ? "bg-green-400 border-green-600"
-            : "bg-gray-200 border-gray-400"
-        } transition-all`}
-        title="Knock Indicator"
-        aria-label="Knock Indicator"
-      >
-        <span className="text-2xl font-bold">
-          {uiKnockActive ? "💡" : "•"}
-        </span>
       </div>
       {/* Access status – rhythm validation */}
       {accessStatus !== "NONE" && (

@@ -16,15 +16,8 @@ export default function Main() {
         priority
       />
       <div className="w-full max-w-lg rounded-lg border border-foreground/10 bg-foreground/5 p-6">
-        <p className="text-center text-foreground/60">Use your knock to unlock door.</p>
+        <p className="text-center text-foreground/60">PRESS K TO KNOCK</p>
       </div>
-      <Knock />
-      <Link
-        href="/"
-        className="rounded-lg bg-sky-400 px-8 py-3 text-lg font-bold text-white"
-      >
-        OTHER PAGE
-      </Link>
       <input
         type="text"
         placeholder="Ask a question..."
