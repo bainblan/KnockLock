@@ -10,7 +10,7 @@ export default function Login() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (username.trim()) {
-      router.push("/choose-knock");
+      router.push("/set-knock");
     }
   };
 

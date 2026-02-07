@@ -1,8 +1,8 @@
 import Image from "next/image";
 
-export default function Door({ knocking, open }: { knocking: boolean; open?: boolean }) {
+export default function Door({ knocking, open, onClose }: { knocking: boolean; open?: boolean; onClose?: () => void }) {
   return (
-    <div className="relative h-[360px] w-[300px]">
+    <div className="relative h-[360px] w-[300px]" onClick={open ? onClose : undefined} style={open ? { cursor: "pointer" } : undefined}>
       <Image
         src={open ? "/Door Open.png" : "/Door Closed.png"}
         alt={open ? "Door open" : "Door closed"}

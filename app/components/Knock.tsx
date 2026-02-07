@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Link from "next/link";
 import Door from "./Door";
+import BackButton from "./BackButton";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -24,7 +24,7 @@ function validateRhythm(recorded: number[], password: number[]): boolean {
   return isMatch;
 }
 
-export default function Knock({ continueHref }: { continueHref?: string }) {
+export default function Knock() {
   const [connected, setConnected] = useState(false);
   const [uiKnockActive, setUiKnockActive] = useState(false);
   const [accessStatus, setAccessStatus] = useState<"NONE" | "GRANTED" | "DENIED">("NONE");
@@ -311,7 +311,7 @@ export default function Knock({ continueHref }: { continueHref?: string }) {
     <div className="flex w-full max-w-lg flex-col items-center gap-8 mt-10">
       <h1 className="text-5xl font-bold w-full text-center">RECORD YOUR KNOCK</h1>
       {/* Knock UI Feedback */}
-      <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} />
+      <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
       <div className="flex w-full flex-col gap-4">
         <button
           onClick={handleConnect}
@@ -321,7 +321,7 @@ export default function Knock({ continueHref }: { continueHref?: string }) {
           }`}
           id="connectBtn"
         >
-          {connected ? "Connected!" : "Connect to Sensor"}
+          {connected ? "Connected!" : "CONNECT TO SENSOR"}
         </button>
         <button
           onClick={handleStartRecording}
@@ -334,7 +334,7 @@ export default function Knock({ continueHref }: { continueHref?: string }) {
         >
           {recording
             ? "Recording... (K key = knock, Enter = done)"
-            : "Record Knock Password"}
+            : "RECORD KNOCK PASSWORD"}
         </button>
         <button
           onClick={handleStartTestKnocking}
@@ -347,7 +347,7 @@ export default function Knock({ continueHref }: { continueHref?: string }) {
         >
           {testKnocking
             ? "Testing... (K key = knock, Enter = test match)"
-            : "Test Knock (Simulate Sensor)"}
+            : "TEST KNOCK"}
         </button>
         {/* Access status – rhythm validation */}
         {accessStatus !== "NONE" && (
@@ -361,14 +361,7 @@ export default function Knock({ continueHref }: { continueHref?: string }) {
             {accessStatus === "GRANTED" ? "ACCESS GRANTED" : "ACCESS DENIED"}
           </div>
         )}
-        {continueHref && (
-          <Link
-            href={continueHref}
-            className="w-full rounded bg-sky-400 px-8 py-3 text-center text-lg font-bold text-white"
-          >
-            CONTINUE
-          </Link>
-        )}
+        <BackButton />
       </div>
       {error && (
         <div className="mt-4 text-red-600 font-mono text-sm">{error}</div>
