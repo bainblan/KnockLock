@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -31,16 +31,22 @@ export default function Knock() {
   // Knock password state
   const [recording, setRecording] = useState(false);
   const [knockPassword, setKnockPassword] = useState<number[] | null>(null); // array of ms intervals
-  const [recordPrompt, setRecordPrompt] = useState<string>("Press 'Record Knock Password'");
+  const knockPasswordRef = useRef<number[] | null>(null); // Persistently track knock password for serial event closure
+  const [recordPrompt, setRecordPrompt] = useState<string>(""); // Prompt removed per instructions
   const [recordedRhythm, setRecordedRhythm] = useState<number[]>([]);
 
   // LOCAL TEST MODE STATE FOR KNOCK MATCHING
   const [testKnocking, setTestKnocking] = useState(false);
-  const [testPrompt, setTestPrompt] = useState<string>("(Optional) Use 'Test Knock' to simulate the ESP32 with your keyboard.");
+  const [testPrompt, setTestPrompt] = useState<string>(""); // Cleared default prompt per instructions
   const testPressTimesRef = useRef<number[]>([]);
 
   // Timing for knock recording
   const pressTimesRef = useRef<number[]>([]);
+
+  // Always keep knockPasswordRef in sync with latest knockPassword
+  useEffect(() => {
+    knockPasswordRef.current = knockPassword;
+  }, [knockPassword]);
 
   // Handle K key knock password entry
   React.useEffect(() => {
@@ -98,7 +104,7 @@ export default function Knock() {
 
   // Start recording on button click
   const handleStartRecording = () => {
-    setRecordPrompt("Recording knock password: Press and release the K key for each knock. Press Enter to finish.");
+    setRecordPrompt(""); // Clear or keep prompt empty per instructions
     setRecording(true);
     setAccessStatus("NONE");
     pressTimesRef.current = [];
@@ -121,12 +127,13 @@ export default function Knock() {
       intervals.push(Math.round(times[i] - times[i - 1]));
     }
     setKnockPassword(intervals);
-    setRecordPrompt(
-      `Password set! Pattern: ${intervals.join(", ")} ms (Press 'Record Knock Password' to re-record)`
-    );
+    // Instead of displaying the pattern in the UI, put it in the console
+    console.log("Set Knock Pattern:", intervals.join(", "), "ms");
+    setRecordPrompt(""); // Do not display in UI
     setError(null);
     pressTimesRef.current = [];
     setRecordedRhythm([]);
+    // No need to directly update ref; useEffect for knockPassword syncs knockPasswordRef
   };
 
   // Listen for Enter key to finish recording
@@ -156,6 +163,8 @@ export default function Knock() {
   }, [testKnocking]);
 
   // Validate incoming ESP32 knock rhythm with the set password
+  // MODIFIED: use ref to ensure latest knockPassword is always checked,
+  // not a stale copy within the serial event closure.
   const handleSerialData = (rawData: string) => {
     const data = rawData.trim();
 
@@ -179,13 +188,22 @@ export default function Knock() {
       // Also show the last received knock for debugging
       setRecordedRhythm(intervals);
 
-      if (!knockPassword || knockPassword.length === 0) {
+      // Output "Latest Knock:" to the console instead of UI
+      if (intervals.length > 0) {
+        console.log(`Latest Knock: ${intervals.join(", ")} ms`);
+      }
+
+      // *** CRITICAL FIX ***
+      // Use most up-to-date knockPassword, not stale closure!
+      const currentKnockPassword = knockPasswordRef.current;
+
+      if (!currentKnockPassword || currentKnockPassword.length === 0) {
         setAccessStatus("NONE");
         setError("No knock password set! Please record knock password first.");
         return;
       }
 
-      const success = validateRhythm(intervals, knockPassword);
+      const success = validateRhythm(intervals, currentKnockPassword);
 
       if (success) {
         setAccessStatus("GRANTED");
@@ -231,7 +249,7 @@ export default function Knock() {
 
   // TEST: handle test knock button click
   const handleStartTestKnocking = () => {
-    setTestPrompt("Simulating knock pattern: Press and release the K key for each knock. Press Enter to test.");
+    setTestPrompt(""); // No instruction message
     setTestKnocking(true);
     setError(null);
     setAccessStatus("NONE");
@@ -258,6 +276,11 @@ export default function Knock() {
 
     setRecordedRhythm(intervals);
 
+    // Output "Latest Knock:" to the console instead of UI
+    if (intervals.length > 0) {
+      console.log(`Latest Knock: ${intervals.join(", ")} ms`);
+    }
+
     if (!knockPassword || knockPassword.length === 0) {
       setAccessStatus("NONE");
       setError("No knock password set! Please record knock password first.");
@@ -270,12 +293,13 @@ export default function Knock() {
     if (success) {
       setAccessStatus("GRANTED");
       setError(null);
-      setTestPrompt("Knock match successful! (Test)");
-
+      console.log("Knock match successful! (Test)");
+      setTestPrompt("");
     } else {
       setAccessStatus("DENIED");
       setError(null);
-      setTestPrompt("Knock pattern did not match! (Test)");
+      console.log("Knock pattern did not match! (Test)");
+      setTestPrompt("");
     }
     testPressTimesRef.current = [];
   };
@@ -328,6 +352,7 @@ export default function Knock() {
           <span className="font-mono">Knocks: {pressTimesRef.current.length}</span>
         </div>
       )}
+      {/* This block removed in accordance with instructions:
       {knockPassword && (
         <div className="text-xs text-green-700 font-mono">
           Set Pattern: {knockPassword.join(", ")} ms
@@ -367,11 +392,7 @@ export default function Knock() {
         </div>
       )}
       {/* Show knock rhythm received for debugging */}
-      {recordedRhythm.length > 0 && (
-        <div className="mt-2 text-xs font-mono text-gray-600">
-          Latest Knock: {recordedRhythm.join(", ")} ms
-        </div>
-      )}
+      {/* Latest Knock is now only output to console and not displayed in UI */}
       {error && (
         <div className="mt-4 text-red-600 font-mono text-sm">{error}</div>
       )}
