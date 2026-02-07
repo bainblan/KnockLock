@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import Image from "next/image";
+import Link from "next/link";
+import Door from "./Door";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -23,7 +24,7 @@ function validateRhythm(recorded: number[], password: number[]): boolean {
   return isMatch;
 }
 
-export default function Knock() {
+export default function Knock({ continueHref }: { continueHref?: string }) {
   const [connected, setConnected] = useState(false);
   const [uiKnockActive, setUiKnockActive] = useState(false);
   const [accessStatus, setAccessStatus] = useState<"NONE" | "GRANTED" | "DENIED">("NONE");
@@ -310,23 +311,7 @@ export default function Knock() {
     <div className="flex w-full max-w-lg flex-col items-center gap-8 mt-10">
       <h1 className="text-5xl font-bold w-full text-center">RECORD YOUR KNOCK</h1>
       {/* Knock UI Feedback */}
-      <div className="relative h-[360px] w-[300px]">
-        <Image
-          src="/Door Closed.png"
-          alt="Door closed"
-          width={200}
-          height={360}
-          className="absolute left-1/2 top-0 h-full w-auto -translate-x-1/2 object-contain"
-          priority
-        />
-        <Image
-          src={uiKnockActive ? "/knock 45 deg.svg" : "/knock hand.svg"}
-          alt={uiKnockActive ? "Knocking hand" : "Hand ready to knock"}
-          width={100}
-          height={100}
-          className={`absolute top-1/3 transition-all duration-100 ${uiKnockActive ? "right-[40px]" : "right-0"}`}
-        />
-      </div>
+      <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} />
       <div className="flex w-full flex-col gap-4">
         <button
           onClick={handleConnect}
@@ -364,21 +349,27 @@ export default function Knock() {
             ? "Testing... (K key = knock, Enter = test match)"
             : "Test Knock (Simulate Sensor)"}
         </button>
+        {/* Access status – rhythm validation */}
+        {accessStatus !== "NONE" && (
+          <div
+            className={`w-full px-6 py-3 rounded text-center text-lg font-mono font-bold transition-all ${
+              accessStatus === "GRANTED"
+                ? "bg-green-100 text-green-700 border border-green-200"
+                : "bg-red-100 text-red-700 border border-red-200"
+            }`}
+          >
+            {accessStatus === "GRANTED" ? "ACCESS GRANTED" : "ACCESS DENIED"}
+          </div>
+        )}
+        {continueHref && (
+          <Link
+            href={continueHref}
+            className="w-full rounded bg-sky-400 px-8 py-3 text-center text-lg font-bold text-white"
+          >
+            CONTINUE
+          </Link>
+        )}
       </div>
-      {/* Access status – rhythm validation */}
-      {accessStatus !== "NONE" && (
-        <div
-          className={`mt-2 px-6 py-3 rounded text-lg font-mono font-bold transition-all ${
-            accessStatus === "GRANTED"
-              ? "bg-green-100 text-green-700 border border-green-200"
-              : "bg-red-100 text-red-700 border border-red-200"
-          }`}
-        >
-          {accessStatus === "GRANTED" ? "ACCESS GRANTED" : "ACCESS DENIED"}
-        </div>
-      )}
-      {/* Show knock rhythm received for debugging */}
-      {/* Latest Knock is now only output to console and not displayed in UI */}
       {error && (
         <div className="mt-4 text-red-600 font-mono text-sm">{error}</div>
       )}
