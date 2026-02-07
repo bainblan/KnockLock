@@ -305,6 +305,14 @@ export default function SetKnock() {
           {error && (
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}
+          <input
+            type="text"
+            placeholder="Ask the magical AI..."
+            className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30"
+          />
+          <div className="w-full rounded-lg border border-foreground/10 bg-foreground/5 p-4 min-h-[80px]">
+            <p className="text-foreground/60">AI response will appear here.</p>
+          </div>
         </div>
       </div>
     </div>
