@@ -34,6 +34,11 @@ export default function Knock() {
   const [recordPrompt, setRecordPrompt] = useState<string>("Press 'Record Knock Password'");
   const [recordedRhythm, setRecordedRhythm] = useState<number[]>([]);
 
+  // LOCAL TEST MODE STATE FOR KNOCK MATCHING
+  const [testKnocking, setTestKnocking] = useState(false);
+  const [testPrompt, setTestPrompt] = useState<string>("(Optional) Use 'Test Knock' to simulate the ESP32 with your keyboard.");
+  const testPressTimesRef = useRef<number[]>([]);
+
   // Timing for knock recording
   const pressTimesRef = useRef<number[]>([]);
 
@@ -64,6 +69,32 @@ export default function Knock() {
       window.removeEventListener("keyup", handleKeyUp);
     };
   }, [recording]);
+
+  // TEST: handle K-key for test knock matching
+  React.useEffect(() => {
+    if (!testKnocking) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "KeyK") {
+        const now = performance.now();
+        testPressTimesRef.current.push(now);
+        setUiKnockActive(true);
+      }
+    };
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.code === "KeyK") {
+        setUiKnockActive(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+    };
+  }, [testKnocking]);
 
   // Start recording on button click
   const handleStartRecording = () => {
@@ -111,6 +142,19 @@ export default function Knock() {
     // eslint-disable-next-line
   }, [recording]);
 
+  // TEST: Listen for Enter key to finish 'test knock', and trigger local validation
+  React.useEffect(() => {
+    if (!testKnocking) return;
+    const onEnter = (e: KeyboardEvent) => {
+      if (e.key === "Enter") {
+        handleFinishTestKnocking();
+      }
+    };
+    window.addEventListener("keydown", onEnter);
+    return () => window.removeEventListener("keydown", onEnter);
+    // eslint-disable-next-line
+  }, [testKnocking]);
+
   // Validate incoming ESP32 knock rhythm with the set password
   const handleSerialData = (rawData: string) => {
     const data = rawData.trim();
@@ -153,24 +197,24 @@ export default function Knock() {
     }
   };
 
-    // Handles connecting and streaming serial input
-    const handleConnect = async () => {
-        setError(null);
-        try {
-            // 1. Request port and open connection
-            // @ts-ignore: 'serial' may not exist on all browsers
-            const port = await navigator.serial.requestPort();
-            await port.open({ baudRate: 921600 });
+  // Handles connecting and streaming serial input
+  const handleConnect = async () => {
+    setError(null);
+    try {
+      // 1. Request port and open connection
+      // @ts-ignore: 'serial' may not exist on all browsers
+      const port = await navigator.serial.requestPort();
+      await port.open({ baudRate: 921600 });
 
-            setConnected(true);
+      setConnected(true);
 
-            // 2. Set up a text decoder to read strings
-            // @ts-ignore: TextDecoderStream may not exist on all browsers
-            const textDecoder = new TextDecoderStream();
-            // @ts-ignore: pipeTo may not exist
-            port.readable.pipeTo(textDecoder.writable);
-            // @ts-ignore
-            const reader = textDecoder.readable.getReader();
+      // 2. Set up a text decoder to read strings
+      // @ts-ignore: TextDecoderStream may not exist on all browsers
+      const textDecoder = new TextDecoderStream();
+      // @ts-ignore: pipeTo may not exist
+      port.readable.pipeTo(textDecoder.writable);
+      // @ts-ignore
+      const reader = textDecoder.readable.getReader();
 
       // 3. Read Loop
       while (true) {
@@ -183,6 +227,57 @@ export default function Knock() {
     } catch (err: any) {
       setError("Serial Connection Failed: " + (err?.message ?? String(err)));
     }
+  };
+
+  // TEST: handle test knock button click
+  const handleStartTestKnocking = () => {
+    setTestPrompt("Simulating knock pattern: Press and release the K key for each knock. Press Enter to test.");
+    setTestKnocking(true);
+    setError(null);
+    setAccessStatus("NONE");
+    testPressTimesRef.current = [];
+    setUiKnockActive(false);
+    setRecordedRhythm([]);
+  };
+
+  // TEST: handle finish test knock and validate locally
+  const handleFinishTestKnocking = () => {
+    setTestKnocking(false);
+
+    // Calculate intervals in ms between knocks
+    const times = testPressTimesRef.current;
+    if (times.length < 2) {
+      setError("Must perform at least 2 test knocks.");
+      setTestPrompt("Too few knocks. Try again!");
+      return;
+    }
+    const intervals: number[] = [];
+    for (let i = 1; i < times.length; ++i) {
+      intervals.push(Math.round(times[i] - times[i - 1]));
+    }
+
+    setRecordedRhythm(intervals);
+
+    if (!knockPassword || knockPassword.length === 0) {
+      setAccessStatus("NONE");
+      setError("No knock password set! Please record knock password first.");
+      setTestPrompt("No knock password set. Record one first!");
+      return;
+    }
+
+    // Simulate ESP32 message: validateRhythm
+    const success = validateRhythm(intervals, knockPassword);
+    if (success) {
+      setAccessStatus("GRANTED");
+      setError(null);
+      setTestPrompt("Knock match successful! (Test)");
+
+    } else {
+      setAccessStatus("DENIED");
+      setError(null);
+      setTestPrompt("Knock pattern did not match! (Test)");
+    }
+    testPressTimesRef.current = [];
   };
 
   // UI rendering for knock highlight & rhythm validation status
@@ -225,6 +320,27 @@ export default function Knock() {
         </div>
       )}
 
+      {/* TEST ONLY: local knock match button and status */}
+      <button
+        onClick={handleStartTestKnocking}
+        disabled={testKnocking}
+        className={`px-6 py-3 rounded bg-purple-600 text-white font-semibold mt-2 transition-opacity ${
+          testKnocking ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
+        }`}
+        id="testKnockBtn"
+        tabIndex={0}
+      >
+        {testKnocking
+          ? "Testing... (K key = knock, Enter = test match)"
+          : "Test Knock (Simulate ESP32)"}
+      </button>
+      <div className="text-center text-xs mt-2 mb-2 text-purple-800">{testPrompt}</div>
+      {testKnocking && (
+        <div className="text-xs text-purple-800">
+          <span className="font-mono">Test Knocks: {testPressTimesRef.current.length}</span>
+        </div>
+      )}
+
       {/* Knock UI Feedback */}
       <div
         className={`w-16 h-16 rounded-full border-2 flex items-center justify-center mt-4 ${
@@ -254,7 +370,7 @@ export default function Knock() {
       {/* Show knock rhythm received for debugging */}
       {recordedRhythm.length > 0 && (
         <div className="mt-2 text-xs font-mono text-gray-600">
-          Latest ESP32 Knock: {recordedRhythm.join(", ")} ms
+          Latest Knock: {recordedRhythm.join(", ")} ms
         </div>
       )}
       {error && (
