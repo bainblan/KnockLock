@@ -1,0 +1,101 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\johnn\\source\\repos\\Whos-There\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\api\\rhythm\\route.ts||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\api\\rhythm\\route.ts||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\johnn\\source\\repos\\Whos-There\\env.local||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:env.local||{8B382828-6202-11D1-8870-0000F87579D2}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\page.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:app\\page.tsx||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\johnn\\source\\repos\\Whos-There\\next.config.ts||{3B902123-F8A7-4915-9F01-361F908088D0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:next.config.ts||{3B902123-F8A7-4915-9F01-361F908088D0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\johnn\\source\\repos\\Whos-There\\eslint.config.mjs||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:eslint.config.mjs||{8B382828-6202-11D1-8870-0000F87579D2}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "env.local",
+              "DocumentMoniker": "C:\\Users\\johnn\\source\\repos\\Whos-There\\env.local",
+              "RelativeDocumentMoniker": "env.local",
+              "ToolTip": "C:\\Users\\johnn\\source\\repos\\Whos-There\\env.local",
+              "RelativeToolTip": "env.local",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAA2AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2026-02-07T17:00:12.083Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "route.ts",
+              "DocumentMoniker": "C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\api\\rhythm\\route.ts",
+              "RelativeDocumentMoniker": "app\\api\\rhythm\\route.ts",
+              "ToolTip": "C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\api\\rhythm\\route.ts",
+              "RelativeToolTip": "app\\api\\rhythm\\route.ts",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAAwDIAAAAxAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-07T16:11:13.211Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "page.tsx",
+              "DocumentMoniker": "C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\page.tsx",
+              "RelativeDocumentMoniker": "app\\page.tsx",
+              "ToolTip": "C:\\Users\\johnn\\source\\repos\\Whos-There\\app\\page.tsx",
+              "RelativeToolTip": "app\\page.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-07T16:56:24.945Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "next.config.ts",
+              "DocumentMoniker": "C:\\Users\\johnn\\source\\repos\\Whos-There\\next.config.ts",
+              "RelativeDocumentMoniker": "next.config.ts",
+              "ToolTip": "C:\\Users\\johnn\\source\\repos\\Whos-There\\next.config.ts",
+              "RelativeToolTip": "next.config.ts",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-02-07T16:07:04.008Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "eslint.config.mjs",
+              "DocumentMoniker": "C:\\Users\\johnn\\source\\repos\\Whos-There\\eslint.config.mjs",
+              "RelativeDocumentMoniker": "eslint.config.mjs",
+              "ToolTip": "C:\\Users\\johnn\\source\\repos\\Whos-There\\eslint.config.mjs",
+              "RelativeToolTip": "eslint.config.mjs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001646|",
+              "WhenOpened": "2026-02-07T16:06:57.589Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
