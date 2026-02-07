@@ -119,7 +119,7 @@ export default function Knock() {
     const times = pressTimesRef.current;
     if (times.length < 2) {
       setError("Must record at least 2 knocks.");
-      setRecordPrompt("Too few knocks. Try again!");
+      setRecordPrompt("");
       return;
     }
     const intervals = [];
@@ -317,7 +317,7 @@ export default function Knock() {
           }`}
           id="connectBtn"
         >
-          {connected ? "Connected!" : "Connect to ESP32"}
+          {connected ? "Connected!" : "Connect to Sensor"}
         </button>
         <button
           onClick={handleStartRecording}
@@ -343,25 +343,19 @@ export default function Knock() {
         >
           {testKnocking
             ? "Testing... (K key = knock, Enter = test match)"
-            : "Test Knock (Simulate ESP32)"}
+            : "Test Knock (Simulate Sensor)"}
         </button>
       </div>
       <div className="text-center text-sm mt-2 mb-2 text-yellow-800">{recordPrompt}</div>
       {recording && (
-        <div className="text-xs text-yellow-800">
-          <span className="font-mono">Knocks: {pressTimesRef.current.length}</span>
+        <div className="text-2xl text-yellow-800">
+          <span className="font-mono font-bold">Knocks: {pressTimesRef.current.length}</span>
         </div>
       )}
-      {/* This block removed in accordance with instructions:
-      {knockPassword && (
-        <div className="text-xs text-green-700 font-mono">
-          Set Pattern: {knockPassword.join(", ")} ms
-        </div>
-      )}
-      <div className="text-center text-xs mt-2 mb-2 text-purple-800">{testPrompt}</div>
+      {/* Test Knock Knocks Counter */}
       {testKnocking && (
-        <div className="text-xs text-purple-800">
-          <span className="font-mono">Test Knocks: {testPressTimesRef.current.length}</span>
+        <div className="text-2xl text-purple-800">
+          <span className="font-mono font-bold">Test Knocks: {testPressTimesRef.current.length}</span>
         </div>
       )}
 
