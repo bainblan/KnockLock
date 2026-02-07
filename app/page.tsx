@@ -4,6 +4,7 @@ import Knock from "./components/Knock";
 export default function Home() {
   return (
     <div className="flex h-screen flex-col items-center justify-between py-12 px-4">
+      <Knock />
       <h1 className="text-5xl font-bold tracking-tight">WHO&apos;S THERE?</h1>
       <Image
         src="/Door Closed.png"
