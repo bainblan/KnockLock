@@ -282,32 +282,46 @@ export default function Knock() {
 
   // UI rendering for knock highlight & rhythm validation status
   return (
-    <div className="flex flex-col items-center gap-8 mt-10">
-      <h1 className="text-3xl font-bold">Knock Demo</h1>
-      <button
-        onClick={handleConnect}
-        disabled={connected}
-        className={`px-6 py-3 rounded bg-blue-600 text-white font-semibold transition-opacity ${
-          connected ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
-        }`}
-        id="connectBtn"
-      >
-        {connected ? "Connected!" : "Connect to ESP32"}
-      </button>
-      {/* Knock password recording UI */}
-      <button
-        onClick={handleStartRecording}
-        disabled={recording}
-        className={`px-6 py-3 rounded bg-yellow-500 text-white font-semibold mt-2 transition-opacity ${
-          recording ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-600"
-        }`}
-        id="recordBtn"
-        tabIndex={0}
-      >
-        {recording
-          ? "Recording... (K key = knock, Enter = done)"
-          : "Record Knock Password"}
-      </button>
+    <div className="flex w-full max-w-lg flex-col items-center gap-8 mt-10">
+      <h1 className="text-5xl font-bold">RECORD YOUR KNOCK</h1>
+      <div className="flex w-full flex-col gap-4">
+        <button
+          onClick={handleConnect}
+          disabled={connected}
+          className={`w-full px-6 py-3 rounded bg-blue-600 text-white font-semibold transition-opacity ${
+            connected ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-700"
+          }`}
+          id="connectBtn"
+        >
+          {connected ? "Connected!" : "Connect to ESP32"}
+        </button>
+        <button
+          onClick={handleStartRecording}
+          disabled={recording}
+          className={`w-full px-6 py-3 rounded bg-yellow-500 text-white font-semibold transition-opacity ${
+            recording ? "opacity-50 cursor-not-allowed" : "hover:bg-yellow-600"
+          }`}
+          id="recordBtn"
+          tabIndex={0}
+        >
+          {recording
+            ? "Recording... (K key = knock, Enter = done)"
+            : "Record Knock Password"}
+        </button>
+        <button
+          onClick={handleStartTestKnocking}
+          disabled={testKnocking}
+          className={`w-full px-6 py-3 rounded bg-purple-600 text-white font-semibold transition-opacity ${
+            testKnocking ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
+          }`}
+          id="testKnockBtn"
+          tabIndex={0}
+        >
+          {testKnocking
+            ? "Testing... (K key = knock, Enter = test match)"
+            : "Test Knock (Simulate ESP32)"}
+        </button>
+      </div>
       <div className="text-center text-sm mt-2 mb-2 text-yellow-800">{recordPrompt}</div>
       {recording && (
         <div className="text-xs text-yellow-800">
@@ -319,21 +333,6 @@ export default function Knock() {
           Set Pattern: {knockPassword.join(", ")} ms
         </div>
       )}
-
-      {/* TEST ONLY: local knock match button and status */}
-      <button
-        onClick={handleStartTestKnocking}
-        disabled={testKnocking}
-        className={`px-6 py-3 rounded bg-purple-600 text-white font-semibold mt-2 transition-opacity ${
-          testKnocking ? "opacity-50 cursor-not-allowed" : "hover:bg-purple-700"
-        }`}
-        id="testKnockBtn"
-        tabIndex={0}
-      >
-        {testKnocking
-          ? "Testing... (K key = knock, Enter = test match)"
-          : "Test Knock (Simulate ESP32)"}
-      </button>
       <div className="text-center text-xs mt-2 mb-2 text-purple-800">{testPrompt}</div>
       {testKnocking && (
         <div className="text-xs text-purple-800">
