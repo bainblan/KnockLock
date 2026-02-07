@@ -26,10 +26,8 @@ export default function Login() {
     if (!session) return;
 
     // ✅ WRITE USERNAME TO DATABASE
-    await supabase.from("Username").upsert({
-      id: session.user.id,
-      username: username.trim(),
-    });
+await supabase.from("Username").insert({ username: username.trim() });
+    
 
     router.push("/set-knock");
   };
