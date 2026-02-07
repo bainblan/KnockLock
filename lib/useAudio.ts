@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 
+type Timbre = "click" | "bell" | "wood";
+
 type UseAudio = {
-  playClick: () => void;
-  playSequence: (intervals: number[]) => void;
+  playClick: (type?: Timbre) => void;
+  playSequence: (intervals: number[], type?: Timbre) => void;
   resumeAudio: () => Promise<void>;
   ready: boolean;
 };
