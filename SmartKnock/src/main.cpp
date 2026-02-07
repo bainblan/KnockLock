@@ -22,20 +22,10 @@ void setup()
 void loop()
 {
 int currentState = digitalRead(touchPin);
+  digitalWrite(ledPin, currentState); // Local LED feedback
 
-  // 1. Instant LED Feedback (Physical Latency)
-  // This happens every loop for the fastest visual response
-  digitalWrite(ledPin, currentState);
-
-  // 2. Logic for Serial Printing (Data Latency)
-  // Only print when the state actually changes
   if (currentState != lastState) {
-    if (currentState == HIGH) {
-      Serial.println("1"); // Use "1" instead of "Touched" for even lower byte-latency
-    } else {
-      Serial.println("0");
-    }
-    // Save the current state for the next comparison
+    Serial.println(currentState); // Send "1" or "0"
     lastState = currentState;
   }
 }
