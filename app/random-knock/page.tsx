@@ -9,7 +9,7 @@ export default function RandomKnock() {
   const [error, setError] = useState<string | null>(null);
   const [lastIntervals, setLastIntervals] = useState<number[] | null>(null);
   const [description, setDescription] = useState<string | null>(null);
-  const [soundType, setSoundType] = useState<"click" | "bell" | "wood">("click");
+  const [soundType, setSoundType] = useState<"knock" | "click" | "bell" | "wood">("knock");
   const { playSequence, resumeAudio } = useAudio();
 
   const generateAndPlay = async () => {
@@ -69,6 +69,7 @@ export default function RandomKnock() {
               onChange={(e) => setSoundType(e.target.value as any)}
               className="rounded border px-2 py-1 text-sm"
             >
+              <option value="knock">Knock</option>
               <option value="click">Click</option>
               <option value="bell">Bell</option>
               <option value="wood">Wood</option>

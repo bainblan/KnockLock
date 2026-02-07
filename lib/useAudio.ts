@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-type Timbre = "click" | "bell" | "wood";
+type Timbre = "knock" | "click" | "bell" | "wood";
 
 type UseAudio = {
   playClick: (type?: Timbre) => void;
@@ -53,7 +53,7 @@ export default function useAudio(): UseAudio {
   };
 
   // Play different timbres: 'click' (noise), 'bell' (sine bell), 'wood' (short low tone)
-  const playClick = (type: "click" | "bell" | "wood" = "click") => {
+  const playClick = (type: Timbre = "knock") => {
     if (!ctxRef.current) {
       void ensureContext();
     }
@@ -113,6 +113,46 @@ export default function useAudio(): UseAudio {
     }
 
     if (type === "wood") {
+          if (type === "knock") {
+            // Short percussive impact with a noisy slap and a small low-frequency body
+            // Noise slap
+            const buffer = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.03), ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < data.length; i++) {
+              data[i] = (Math.random() * 2 - 1) * Math.exp(-30 * (i / data.length));
+            }
+            const src = ctx.createBufferSource();
+            src.buffer = buffer;
+
+            const slapFilter = ctx.createBiquadFilter();
+            slapFilter.type = "bandpass";
+            slapFilter.frequency.value = 1200;
+            slapFilter.Q = 1.5;
+
+            const slapGain = ctx.createGain();
+            slapGain.gain.setValueAtTime(0.6, now);
+            slapGain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+            src.connect(slapFilter);
+            slapFilter.connect(slapGain);
+            slapGain.connect(master);
+            src.start(now);
+            src.stop(now + 0.09);
+
+            // Low-frequency body (short sine-ish thud)
+            const bodyOsc = ctx.createOscillator();
+            const bodyGain = ctx.createGain();
+            bodyOsc.type = "sine";
+            bodyOsc.frequency.value = 120;
+            bodyGain.gain.setValueAtTime(0.01, now);
+            bodyGain.gain.exponentialRampToValueAtTime(0.5, now + 0.005);
+            bodyGain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+            bodyOsc.connect(bodyGain);
+            bodyGain.connect(master);
+            bodyOsc.start(now);
+            bodyOsc.stop(now + 0.12);
+            return;
+          }
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       const biquad = ctx.createBiquadFilter();
