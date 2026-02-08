@@ -7,6 +7,7 @@ import { supabase } from "../../lib/supabaseClient";
 export default function Login() {
   const [username, setUsername] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   // Handle LOGIN button click: search for user, display error if not found
@@ -17,6 +18,8 @@ export default function Login() {
     const name = username.trim();
     if (!name) return;
 
+    setLoading(true);
+
     // Query Supabase for the username
     const { data, error: dbError } = await supabase
       .from("Username")
@@ -26,6 +29,7 @@ export default function Login() {
 
     if (dbError || !data) {
       setError(`No one with "${name}" exists in our neighborhood`);
+      setLoading(false);
       return;
     }
 
@@ -40,6 +44,8 @@ export default function Login() {
 
     const name = username.trim();
     if (!name) return;
+
+    setLoading(true);
 
     // Ensure anonymous session for demo
     let { data } = await supabase.auth.getSession();
@@ -82,18 +88,25 @@ export default function Login() {
           <button
             type="button"
             onClick={handleLogin}
-            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer"
+            disabled={loading}
+            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             LOGIN
           </button>
           <button
             type="button"
             onClick={handleCreateAccount}
-            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer"
+            disabled={loading}
+            className="flex-1 rounded-lg border-2 border-white bg-sky-400 py-3 text-lg font-bold text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             CREATE ACCOUNT
           </button>
         </div>
+        {loading && (
+          <div className="flex justify-center">
+            <span className="h-6 w-6 border-2 border-sky-400 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
       </form>
     </div>
   );
