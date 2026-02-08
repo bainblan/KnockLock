@@ -43,7 +43,7 @@ export default function RecordButton({
           tabIndex={0}
         />
       )}
-      <MagicButton disabled={disabled} onGenerated={onMagicGenerated} onError={onMagicError} />
+      {/* <MagicButton disabled={disabled} onGenerated={onMagicGenerated} onError={onMagicError} /> */}
     </div>
   );
 }
