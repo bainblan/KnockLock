@@ -26,8 +26,8 @@ export default function ConnectButton({
       onClick={onClick}
       disabled={disabled}
       className={`w-full btn-flip cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
-      data-front="CONNECT TO SENSOR"
-      data-back="CONNECT TO SENSOR"
+      data-front="CONNECT SENSOR"
+      data-back="CONNECT SENSOR"
       style={{
         "--flip-front-bg": "#2563eb",
         "--flip-front-color": "#ffffff",
