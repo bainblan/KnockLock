@@ -160,20 +160,22 @@ export default function SetKnock() {
   // --- AI GENERATION LOGIC ---
   const handleAiSubmit = async (e?: React.KeyboardEvent) => {
     if (e && e.key !== "Enter") return;
-    if (!aiPrompt.trim()) return;
 
     setAiLoading(true);
     setError(null);
     setAiDescription(null);
 
+    const isRandom = !aiPrompt.trim();
+
     try {
       const res = await fetch("/api/rhythm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          mode: "custom",
-          userPrompt: aiPrompt,
-        }),
+        body: JSON.stringify(
+          isRandom
+            ? { mode: "random" }
+            : { mode: "custom", userPrompt: aiPrompt }
+        ),
       });
 
       const data = await res.json();
@@ -182,13 +184,23 @@ export default function SetKnock() {
         throw new Error(data.error || "Failed to generate rhythm");
       }
 
-      // Success! Update the password
-      setKnockPassword(data.intervals);
-      setAiDescription(data.description);
-      setRecordPrompt("AI Rhythm Loaded! Try 'Test Knock' to verify.");
-      
+      const intervals: number[] = Array.isArray(data?.intervals) ? data.intervals : [];
+      const description = typeof data?.description === "string" ? data.description : null;
+
+      if (intervals.length > 0) {
+        setKnockPassword(intervals);
+        setAiDescription(description);
+        setRecordPrompt(
+          isRandom
+            ? "Random Rhythm Loaded! Try 'Test Knock' to verify."
+            : "AI Rhythm Loaded! Try 'Test Knock' to verify."
+        );
+        setError(null);
+      } else {
+        setError("AI Error: No rhythm returned");
+      }
     } catch (err: any) {
-      setError("AI Error: " + err.message);
+      setError("AI Error: " + (err?.message ?? String(err)));
     } finally {
       setAiLoading(false);
     }
@@ -445,12 +457,12 @@ export default function SetKnock() {
                     onChange={(e) => setAiPrompt(e.target.value)}
                     onKeyDown={handleAiSubmit}
                     disabled={aiLoading}
-                    placeholder="Ask the magical AI for a rhythm..."
-                    className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 outline-none focus:border-foreground/30 disabled:opacity-50"
+                    placeholder="Name your rhythm to summon a Sacred Cadence, or leave blank to let Fate decide."
+                    className="w-full rounded-lg border border-foreground/10 bg-foreground/5 px-4 py-3 text-foreground placeholder:text-foreground/40 placeholder:text-xs outline-none focus:border-foreground/30 disabled:opacity-50"
                 />
                 <button 
                   onClick={() => handleAiSubmit()} 
-                  disabled={aiLoading || !aiPrompt}
+                  disabled={aiLoading}
                   className="px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
                   {aiLoading ? "..." : "Go"}

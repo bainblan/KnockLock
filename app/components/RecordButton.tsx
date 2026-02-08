@@ -29,7 +29,7 @@ export default function RecordButton({
           ? "Recording... (K key = knock, Enter = done)"
           : "RECORD"}
       </button>
-      <MagicButton disabled={disabled} onGenerated={onMagicGenerated} onError={onMagicError} />
+      {/* <MagicButton disabled={disabled} onGenerated={onMagicGenerated} onError={onMagicError} /> */}
     </div>
   );
 }
