@@ -10,7 +10,7 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // Handle LOGIN button click: search for user, display error if not found
+  // Handle LOGIN: check username in Supabase via API, then set session cookie
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -18,22 +18,19 @@ export default function Login() {
     const name = username.trim();
     if (!name) return;
 
-    setLoading(true);
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: name }),
+      credentials: "include",
+    });
+    const data = await res.json().catch(() => ({}));
 
-    // Query Supabase for the username
-    const { data, error: dbError } = await supabase
-      .from("Username")
-      .select("*")
-      .eq("username", name)
-      .single();
-
-    if (dbError || !data) {
-      setError(`No one with "${name}" exists in our neighborhood`);
-      setLoading(false);
+    if (!res.ok) {
+      setError(data?.error ?? "Login failed");
       return;
     }
 
-    window.localStorage.setItem("username", name);
     router.push("/set-knock");
   };
 
@@ -64,7 +61,13 @@ export default function Login() {
       username: name,
     });
 
-    window.localStorage.setItem("username", name);
+    // Create session cookie so user is logged in (knock pattern may be empty until set)
+    await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: name }),
+      credentials: "include",
+    });
     router.push("/set-knock");
   };
 
