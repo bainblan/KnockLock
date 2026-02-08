@@ -375,7 +375,7 @@ export default function SetKnock() {
       <h1 className="text-5xl font-bold text-center">
         Welcome to XXX's Home
       </h1>
-      <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-64">
+      <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-32">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
         <div className="flex w-full max-w-2xl flex-col gap-4">
           <RecordButton recording={recording} onClick={handleStartRecording} />
