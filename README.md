@@ -1,6 +1,6 @@
 # KnockLock
 
-- npm run dev to run
+- npm run dev to run or knocklock.vercel.app
 
 ## Purpose
 
