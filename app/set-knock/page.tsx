@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Door from "../components/Door";
 import ConnectButton from "../components/ConnectButton";
 import RecordButton from "../components/RecordButton";
 import TestKnockButton from "../components/TestKnockButton";
 import AccessStatus from "../components/AccessStatus";
-import BackButton from "../components/LogoutButton";
+import BackButton from "../components/BackButton";
+import { getSession } from "../../lib/session";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
 
@@ -29,6 +31,8 @@ function validateRhythm(recorded: number[], password: number[]): boolean {
 }
 
 export default function SetKnock() {
+  const router = useRouter();
+  const [sessionUsername, setSessionUsername] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [uiKnockActive, setUiKnockActive] = useState(false);
   const [accessStatus, setAccessStatus] = useState<"NONE" | "GRANTED" | "DENIED">("NONE");
@@ -58,6 +62,13 @@ export default function SetKnock() {
   useEffect(() => {
     knockPasswordRef.current = knockPassword;
   }, [knockPassword]);
+
+  // Load session username from JWT cookie for welcome message
+  useEffect(() => {
+    getSession().then((session) => {
+      setSessionUsername(session?.username ?? null);
+    });
+  }, []);
 
   // Handle K key knock password entry
   React.useEffect(() => {
@@ -373,7 +384,7 @@ export default function SetKnock() {
   return (
     <div className="flex min-h-screen flex-col gap-24 items-center py-12 px-4">
       <h1 className="text-5xl font-bold text-center">
-        Welcome to XXX's Home
+        Welcome to {sessionUsername ?? "Unkown"}&apos;s Home
       </h1>
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-64">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
@@ -400,7 +411,16 @@ export default function SetKnock() {
             </div>
           )}
           <AccessStatus status={accessStatus} />
-          <BackButton disabled={recording} />
+          <BackButton
+            disabled={recording}
+            onClick={async () => {
+              await fetch("/api/auth/logout", {
+                method: "POST",
+                credentials: "include",
+              });
+              router.push("/login");
+            }}
+          />
           {error && (
             <div className="text-red-600 font-mono text-sm">{error}</div>
           )}

@@ -2,3 +2,4 @@
 
 NEXT_PUBLIC_SUPABASE_ANON_KEY= # in google doc
 NEXT_PUBLIC_SUPABASE_URL= # in google doc
+JWT_SECRET= # pick a long random string for signing the session cookie
