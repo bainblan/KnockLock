@@ -2,13 +2,13 @@ import Image from "next/image";
 
 export default function Door({ knocking, open, onClose }: { knocking: boolean; open?: boolean; onClose?: () => void }) {
   return (
-    <div className="relative h-[70vh] w-[400px] shrink-0" onClick={open ? onClose : undefined} style={open ? { cursor: "pointer" } : undefined}>
+    <div className="relative h-[700px] w-[400px] shrink-0" onClick={open ? onClose : undefined} style={open ? { cursor: "pointer" } : undefined}>
       <Image
         src={open ? "/Door Open.png" : "/Door Closed.png"}
         alt={open ? "Door open" : "Door closed"}
-        width={400}
-        height={700}
-        className="h-full w-auto object-contain"
+        width={open ? 431 : 400}
+        height={open ? 486 : 700}
+        className="h-[700px] w-auto border-2 border-white object-contain"
         priority
       />
       {!open && (

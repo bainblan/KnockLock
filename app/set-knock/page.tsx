@@ -8,7 +8,6 @@ import RecordButton from "../components/RecordButton";
 import TestKnockButton from "../components/TestKnockButton";
 import AccessStatus from "../components/AccessStatus";
 import BackButton from "../components/BackButton";
-import MagicButton from "../components/MagicButton";
 import { getSession } from "../../lib/session";
 
 const TOLERANCE = 200; // Allowable error margin (plus or minus 200ms)
@@ -390,16 +389,17 @@ export default function SetKnock() {
       <div className="flex w-full max-w-8xl flex-row items-center justify-center gap-32">
         <Door knocking={uiKnockActive} open={accessStatus === "GRANTED"} onClose={() => setAccessStatus("NONE")} />
         <div className="flex w-full max-w-2xl flex-col gap-4">
-          <RecordButton recording={recording} onClick={handleStartRecording} />
-          <MagicButton
-            disabled={recording || testKnocking}
-            onGenerated={(intervals, description) => {
+          <RecordButton
+            recording={recording}
+            onClick={handleStartRecording}
+            disabled={testKnocking}
+            onMagicGenerated={(intervals, description) => {
               setKnockPassword(intervals);
               setAiDescription(description);
               setRecordPrompt("Random Rhythm Loaded! Try 'Test Knock' to verify.");
               setError(null);
             }}
-            onError={(msg) => setError("Magic Error: " + msg)}
+            onMagicError={(msg) => setError("Magic Error: " + msg)}
           />
           {recording && recordPrompt && (
             <div className="w-full text-center text-base text-yellow-800 bg-yellow-50 py-2 rounded mb-2 font-mono border border-yellow-200">

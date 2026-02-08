@@ -4,10 +4,14 @@ export default function RecordButton({
   recording,
   onClick,
   disabled: externalDisabled = false,
+  onMagicGenerated,
+  onMagicError,
 }: {
   recording: boolean;
   onClick: () => void;
   disabled?: boolean;
+  onMagicGenerated: (intervals: number[], description: string | null) => void;
+  onMagicError: (message: string) => void;
 }) {
   const disabled = recording || externalDisabled;
   return (
@@ -25,7 +29,7 @@ export default function RecordButton({
           ? "Recording... (K key = knock, Enter = done)"
           : "RECORD"}
       </button>
-      <MagicButton disabled={disabled} />
+      <MagicButton disabled={disabled} onGenerated={onMagicGenerated} onError={onMagicError} />
     </div>
   );
 }
