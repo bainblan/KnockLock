@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WHO'S THERE?",
+  title: "KnockLock",
   description: "Knock on door in a certain pattern to unlock door",
 };
 

@@ -18,6 +18,8 @@ export default function Login() {
     const name = username.trim();
     if (!name) return;
 
+    setLoading(true);
+
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -28,6 +30,7 @@ export default function Login() {
 
     if (!res.ok) {
       setError(data?.error ?? "Login failed");
+      setLoading(false);
       return;
     }
 
@@ -73,7 +76,7 @@ export default function Login() {
 
   return (
     <div className="flex h-screen flex-col items-center justify-center gap-8 px-4">
-      <h1 className="fade-in text-4xl font-bold tracking-tight">Welcome</h1>
+      <h1 className="fade-in text-4xl font-bold tracking-tight">Welcome to <span className="text-sky-400">Knock</span>Lock</h1>
       <form className="flex w-full max-w-sm flex-col gap-4">
         <input
           type="text"

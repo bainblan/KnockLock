@@ -25,11 +25,15 @@ export default function BackButton({
       type="button"
       onClick={handleClick}
       disabled={disabled}
-      className={`w-full px-6 py-3 rounded bg-gray-500 text-white font-semibold transition-opacity ${
-        disabled ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-600"
-      }`}
-    >
-      LOGOUT
-    </button>
+      className={`w-full btn-flip cursor-pointer ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
+      data-front="LOGOUT"
+      data-back="LOGOUT"
+      style={{
+        "--flip-front-bg": "#6b7280",
+        "--flip-front-color": "#ffffff",
+        "--flip-back-bg": "#ffffff",
+        "--flip-back-color": "#6b7280",
+      } as React.CSSProperties}
+    />
   );
 }
